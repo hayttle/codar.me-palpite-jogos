@@ -1,10 +1,22 @@
 import {PrismaClient} from "@prisma/client";
+import {addDays, formatISO} from "date-fns";
 
 const prisma = new PrismaClient();
 
 export const list = async (ctx) => {
+  const currentDate = ctx.request.query.gameTime;
+  const where = currentDate
+    ? {
+        gameTime: {
+          gte: currentDate,
+          lt: formatISO(addDays(new Date(currentDate), 1)),
+        },
+      }
+    : {};
+
   try {
-    const games = await prisma.game.findMany();
+    const games = await prisma.game.findMany({where});
+
     ctx.body = games;
   } catch (error) {
     console.error(error);
