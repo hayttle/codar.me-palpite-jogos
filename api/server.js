@@ -1,4 +1,7 @@
-import { app } from "./setup.js";
+import {app} from "./setup.js";
 
-app.listen(3000);
-console.log("Server listening on port 3000...");
+const port = 3000;
+
+app.listen(port, () => {
+  console.log(`Server is running at http://localhost:${port}`);
+});
