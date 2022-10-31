@@ -1,8 +1,6 @@
-import {PrismaClient} from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
-const prisma = new PrismaClient({
-  log: ["query", "info", "warn", "error"],
-});
+const prisma = new PrismaClient();
 
 export const create = async (ctx) => {
   const password = await bcrypt.hash(ctx.request.body.password, 10);
@@ -14,7 +12,7 @@ export const create = async (ctx) => {
   };
 
   try {
-    const {password, ...user} = await prisma.user.create({
+    const { password, ...user } = await prisma.user.create({
       data,
     });
     ctx.body = user;
@@ -29,20 +27,23 @@ export const create = async (ctx) => {
 export const login = async (ctx) => {
   const [, token] = ctx.headers.authorization.split(" ");
   const [username, password] = atob(token).split(":");
-  console.log({username, password});
   try {
-    const userAuthenticated = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
-        username_password: {
-          username,
-          password: await bcrypt.hash(password, 10),
-        },
+        username,
       },
     });
-    ctx.body = userAuthenticated;
-    ctx.status = 200;
+
+    const hash = user.password;
+    const userAuthenticated = await bcrypt.compare(password, hash);
+    if (userAuthenticated) {
+      ctx.body = "Usuário autenticado";
+    } else {
+      ctx.status = 401;
+      ctx.body = "Senha inválida!";
+    }
   } catch (error) {
     ctx.status = 401;
-    ctx.body = error;
+    ctx.body = "Nome de usuário inválido!";
   }
 };
