@@ -3,12 +3,17 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const create = async (ctx) => {
-  const [, token] = ctx.request.headers.authorization.split(" ");
 
+  if(!ctx.headers.authorization){
+    ctx.status = 401
+    return
+  }
+
+  const [, token] = ctx.request.headers.authorization.split(" ");
+  
   try {
     const data = jwt.verify(token, process.env.JWT_SECRET);
-
-    console.log(data);
+    
     if (!ctx.request.body.homeTeamScore && !ctx.request.body.awayTeamScore) {
       ctx.status = 400;
       return;
