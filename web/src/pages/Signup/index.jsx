@@ -101,9 +101,9 @@ export const Signup = () => {
           <button
             type="submit"
             className="block w-full text-center text-white bg-red-500 px-6 py-3 rounded-xl font-bold disabled:opacity-50"
-            disabled={!formik.isValid}
+            disabled={!formik.isValid || formik.isSubmitting}
           >
-            Criar
+            {formik.isSubmitting ? "Carregando..." : "Criar minha conta"}
           </button>
         </form>
       </main>
