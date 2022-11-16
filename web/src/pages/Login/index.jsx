@@ -10,9 +10,33 @@ const validationSchema = yup.object().shape({
   password: yup.string().required("Digite uma senha!")
 })
 
+const setLocalStorage = (key, value, ttl) => {
+  const now = new Date()
+  const item = {
+    isLogged: value,
+    expiry: now.getTime() + ttl
+  }
+  localStorage.setItem(key, JSON.stringify(item))
+}
+
+const getLocalStorage = (key) => {
+  const itemStr = localStorage.getItem(key)
+  if (!itemStr) {
+    return null
+  }
+  const item = JSON.parse(itemStr)
+  const now = new Date()
+
+  if (now.getTime() > item.expiry) {
+    localStorage.removeItem(key)
+    return null
+  }
+  return item.isLogged
+}
+
 export const Login = () => {
   const navigate = useNavigate()
-  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated") || false)
+  const [authenticated, setAuthenticated] = useState(getLocalStorage("authenticated") || false)
 
   useEffect(() => {
     if (authenticated) {
@@ -34,7 +58,8 @@ export const Login = () => {
         })
 
         if (response) {
-          localStorage.setItem("authenticated", true)
+          setLocalStorage("authenticated", true, 3600000)//Sessão expira após 2hs
+          // localStorage.setItem("authenticated", true)
           setAuthenticated(true)
           navigate("/dashboard")
         }
