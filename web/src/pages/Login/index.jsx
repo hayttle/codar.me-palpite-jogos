@@ -1,43 +1,54 @@
-import { Icon, Input } from "~/components";
-import axios from "axios";
-import { useFormik } from "formik";
-import * as yup from "yup";
-
-//TODO: import {useLocalStorage} from 'react-use'
+import {Icon, Input} from "~/components"
+import axios from "axios"
+import {useFormik} from "formik"
+import * as yup from "yup"
+import {useNavigate} from "react-router-dom"
+import {useState, useEffect} from "react"
 
 const validationSchema = yup.object().shape({
-  email: yup
-    .string()
-    .email("Informe um email válido!")
-    .required("Informe seu email!"),
-  password: yup.string().required("Digite uma senha!"),
-});
+  email: yup.string().email("Informe um email válido!").required("Informe seu email!"),
+  password: yup.string().required("Digite uma senha!")
+})
 
 export const Login = () => {
+  const navigate = useNavigate()
+  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated") || false)
+
+  useEffect(() => {
+    if (authenticated) {
+      navigate("/dashboard")
+    }
+  }, [])
+
   const formik = useFormik({
     onSubmit: async (values) => {
-      const response = await axios({
-        method: "GET",
-        baseURL: "http://localhost:3000",
-        url: "/login",
-        auth: {
-          username: values.email,
-          password: values.password,
-        },
-      });
+      try {
+        const response = await axios({
+          method: "GET",
+          baseURL: "http://localhost:3000",
+          url: "/login",
+          auth: {
+            username: values.email,
+            password: values.password
+          }
+        })
 
-      //TODO: response.data
-
-      // console.log(response.data);
-
-      //TODO: localStorage.setItem("auth", JSON.stringify(response.data));
+        if (response) {
+          localStorage.setItem("authenticated", true)
+          setAuthenticated(true)
+          navigate("/dashboard")
+        }
+      } catch (error) {
+        console.log(error.response.data)
+      }
     },
     initialValues: {
       email: "",
-      password: "",
+      password: ""
     },
-    validationSchema,
-  });
+    validationSchema
+  })
+
   return (
     <div>
       <header className="p-4 border-b border-red-300">
@@ -52,11 +63,8 @@ export const Login = () => {
           </a>
           <h2 className="text-xl font-bold">Entre na sua conta</h2>
         </div>
-        <form
-          action=""
-          className="p-4 space-y-6"
-          onSubmit={formik.handleSubmit}
-        >
+
+        <form action="" className="p-4 space-y-6" onSubmit={formik.handleSubmit}>
           <Input
             type="text"
             name="email"
@@ -89,5 +97,5 @@ export const Login = () => {
         </form>
       </main>
     </div>
-  );
-};
+  )
+}
