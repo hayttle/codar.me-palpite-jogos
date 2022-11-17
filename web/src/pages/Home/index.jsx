@@ -4,16 +4,20 @@ import {useState, useEffect} from "react"
 import {useNavigate} from "react-router-dom"
 
 export const Home = () => {
+  const navigate = useNavigate()
+  const [auth] = useState(JSON.parse(localStorage.getItem("auth")) || false)
+
   useEffect(() => {
     document.title = "Natrave - Home"
  }, []);
-  const [authenticated] = useState(localStorage.getItem("authenticated") || false)
-  const navigate = useNavigate()
-  useEffect(() => {
-    if (authenticated) {
+
+ useEffect(() => {
+    const now = new Date()
+    if (auth && now.getTime() < auth.expiry) {
       navigate("/dashboard")
     }
   }, [])
+
   return (
     <div className="h-screen bg-red-700 text-white flex flex-col items-center p-4 space-y-6">
       <header className="container flex justify-center max-w-5xl p-4">

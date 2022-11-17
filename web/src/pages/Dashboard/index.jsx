@@ -3,21 +3,22 @@ import {useNavigate} from "react-router-dom"
 import {useState, useEffect} from "react"
 
 export const Dashboard = () => {
-  useEffect(() => {
-    document.title = "Natrave - Dashboard"
- }, []);
-  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated") || false)
+  const [auth] = useState(JSON.parse(localStorage.getItem("auth")) || false)
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (!authenticated) {
-      navigate("/login")
+    document.title = "Natrave - Dashboard"
+  }, [])
+
+  useEffect(() => {
+    const now = new Date()
+    if (!auth || now.getTime() > auth.expiry) {
+      logout()
     }
   }, [])
 
   const logout = () => {
-    setAuthenticated(false)
-    localStorage.removeItem("authenticated")
+    localStorage.removeItem("auth")
     navigate("/")
   }
 

@@ -10,39 +10,27 @@ const validationSchema = yup.object().shape({
   password: yup.string().required("Digite uma senha!")
 })
 
-const setLocalStorage = (key, value, ttl) => {
+const setLocalStorage = (key, dataUser) => {
   const now = new Date()
+  const ttl = 3600000 //Sessão expira após 1hs
   const item = {
-    isLogged: value,
+    ...dataUser,
     expiry: now.getTime() + ttl
   }
   localStorage.setItem(key, JSON.stringify(item))
 }
 
-const getLocalStorage = (key) => {
-  const itemStr = localStorage.getItem(key)
-  if (!itemStr) {
-    return null
-  }
-  const item = JSON.parse(itemStr)
-  const now = new Date()
-
-  if (now.getTime() > item.expiry) {
-    localStorage.removeItem(key)
-    return null
-  }
-  return item.isLogged
-}
-
 export const Login = () => {
+  const navigate = useNavigate()
+  const [auth] = useState(JSON.parse(localStorage.getItem("auth") || false))
+
   useEffect(() => {
     document.title = "Natrave - Login"
- }, []);
-  const navigate = useNavigate()
-  const [authenticated, setAuthenticated] = useState(getLocalStorage("authenticated") || false)
+  }, [])
 
   useEffect(() => {
-    if (authenticated) {
+    const now = new Date()
+    if (auth && now.getTime() < auth.expiry) {
       navigate("/dashboard")
     }
   }, [])
@@ -61,9 +49,7 @@ export const Login = () => {
         })
 
         if (response) {
-          setLocalStorage("authenticated", true, 3600000)//Sessão expira após 2hs
-          // localStorage.setItem("authenticated", true)
-          setAuthenticated(true)
+          setLocalStorage("auth", response.data)
           navigate("/dashboard")
         }
       } catch (error) {
