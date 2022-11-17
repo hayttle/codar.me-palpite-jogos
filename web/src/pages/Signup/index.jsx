@@ -1,39 +1,39 @@
-import { Icon, Input } from "~/components";
-import axios from "axios";
-import { useFormik } from "formik";
-import * as yup from "yup";
+import {Icon, Input} from "~/components"
+import axios from "axios"
+import {useFormik} from "formik"
+import * as yup from "yup"
+import {useEffect} from "react"
 
 const validationSchema = yup.object().shape({
   name: yup.string().required("Preencha seu nome!"),
   username: yup.string().required("Preencha seu usuário!"),
-  email: yup
-    .string()
-    .email("Informe um email válido!")
-    .required("Informe seu email!"),
-  password: yup.string().required("Digite uma senha!"),
-});
+  email: yup.string().email("Informe um email válido!").required("Informe seu email!"),
+  password: yup.string().required("Digite uma senha!")
+})
 
 export const Signup = () => {
+  useEffect(() => {
+    document.title = "Natrave - Signup"
+  }, [])
   const formik = useFormik({
     onSubmit: async (values) => {
       const response = await axios({
         method: "POST",
         baseURL: "http://localhost:3000",
         url: "/users",
-        data: values,
-      });
-      
-      //TODO: response.data
+        data: values
+      })
 
+      //TODO: response.data
     },
     initialValues: {
       name: "",
       username: "",
       email: "",
-      password: "",
+      password: ""
     },
-    validationSchema,
-  });
+    validationSchema
+  })
 
   return (
     <div>
@@ -49,11 +49,7 @@ export const Signup = () => {
           </a>
           <h2 className="text-xl font-bold">Crie sua conta</h2>
         </div>
-        <form
-          action=""
-          className="p-4 space-y-6"
-          onSubmit={formik.handleSubmit}
-        >
+        <form action="" className="p-4 space-y-6" onSubmit={formik.handleSubmit}>
           <Input
             type="text"
             name="name"
@@ -108,5 +104,5 @@ export const Signup = () => {
         </form>
       </main>
     </div>
-  );
-};
+  )
+}

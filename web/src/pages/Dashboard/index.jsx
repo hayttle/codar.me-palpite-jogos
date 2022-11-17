@@ -3,30 +3,35 @@ import {useNavigate} from "react-router-dom"
 import {useState, useEffect} from "react"
 
 export const Dashboard = () => {
+  useEffect(() => {
+    document.title = "Natrave - Dashboard"
+ }, []);
+  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated") || false)
   const navigate = useNavigate()
 
-  const logout = () => {
-    setAuthenticated(false)
-    localStorage.removeItem("authenticated")
-    navigate("/login")
-  }
-
-  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated") || false)
   useEffect(() => {
     if (!authenticated) {
       navigate("/login")
     }
   }, [])
 
+  const logout = () => {
+    setAuthenticated(false)
+    localStorage.removeItem("authenticated")
+    navigate("/")
+  }
+
   return (
     <>
       <header className="bg-red-500 text-white p-4">
         <div className="container max-x-3xl flex justify-between p-4">
           <img src="/imgs/logo-red.svg" className="w-28 md:w-40" alt="" />
-          <a href="/profile">
-            <Icon name="profile" className="w-10" />
-          </a>
-          <button onClick={logout}>Sair</button>
+          <div className="flex flex-col justify-center">
+            <a href="/profile">
+              <Icon name="profile" className="w-10" />
+            </a>
+            <button onClick={logout}>Sair</button>
+          </div>
         </div>
       </header>
 
@@ -42,9 +47,7 @@ export const Dashboard = () => {
           <DateSelect />
 
           <div className="space-y-4">
-            <Card timeA={{slug: "sui"}} timeB={{slug: "cam"}} match={{time: "7:00"}} />
-            <Card timeA={{slug: "uru"}} timeB={{slug: "cor"}} match={{time: "7:00"}} />
-            <Card timeA={{slug: "por"}} timeB={{slug: "gan"}} match={{time: "7:00"}} />
+            <Card homeTeam={{slug: "sui"}} awayTeam={{slug: "cam"}} match={{time: "7:00"}} />
           </div>
         </section>
       </main>

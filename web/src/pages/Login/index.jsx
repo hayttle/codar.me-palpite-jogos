@@ -35,6 +35,9 @@ const getLocalStorage = (key) => {
 }
 
 export const Login = () => {
+  useEffect(() => {
+    document.title = "Natrave - Login"
+ }, []);
   const navigate = useNavigate()
   const [authenticated, setAuthenticated] = useState(getLocalStorage("authenticated") || false)
 

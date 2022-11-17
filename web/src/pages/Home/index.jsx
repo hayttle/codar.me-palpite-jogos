@@ -1,6 +1,19 @@
-const Title = ({ children, ...props }) => <h1 {...props}>{children}</h1>;
+const Title = ({children, ...props}) => <h1 {...props}>{children}</h1>
 
-export function Home() {
+import {useState, useEffect} from "react"
+import {useNavigate} from "react-router-dom"
+
+export const Home = () => {
+  useEffect(() => {
+    document.title = "Natrave - Home"
+ }, []);
+  const [authenticated] = useState(localStorage.getItem("authenticated") || false)
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (authenticated) {
+      navigate("/dashboard")
+    }
+  }, [])
   return (
     <div className="h-screen bg-red-700 text-white flex flex-col items-center p-4 space-y-6">
       <header className="container flex justify-center max-w-5xl p-4">
@@ -14,18 +27,14 @@ export function Home() {
           <h1 className="text-3xl text-center md:text-left font-bold">
             Dê o seu palpite na Copa do Mundo do Catar 2022!
           </h1>
-          <a
-            href="/signup" className="text-center text-red-700 bg-white text-xl px-8 py-4 rounded-xl"
-          >
+          <a href="/signup" className="text-center text-red-700 bg-white text-xl px-8 py-4 rounded-xl">
             Criar minha conta
           </a>
-          <a
-            href="/login" className="text-center text-white border border-white text-xl px-8 py-4 rounded-xl"
-          >
+          <a href="/login" className="text-center text-white border border-white text-xl px-8 py-4 rounded-xl">
             Fazer login
           </a>
         </div>
       </div>
     </div>
-  );
+  )
 }
