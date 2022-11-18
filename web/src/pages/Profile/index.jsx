@@ -1,9 +1,11 @@
+import { formatISO } from "date-fns"
 import {useState, useEffect} from "react"
 import {useNavigate} from "react-router-dom"
 import {Icon, Card, DateSelect} from "~/components"
 
 export const Profile = () => {
   const [auth] = useState(JSON.parse(localStorage.getItem("auth")) || false)
+  const [currentDate, setCurrentDate] = useState(formatISO(new Date(2022, 10, 20)))
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -38,12 +40,10 @@ export const Profile = () => {
         <section id="content" className="container max-x-3xl p-4 space-y-4">
           <h2 className="text-red-500 text-xl font-bold">Seus palpites</h2>
 
-          <DateSelect />
+          <DateSelect currentDate={currentDate} onChange={setCurrentDate} />
 
           <div className="space-y-4">
-            <Card homeTeam={{slug: "sui"}} awayTeam={{slug: "cam"}} match={{time: "7:00"}} />
-            <Card homeTeam={{slug: "uru"}} awayTeam={{slug: "cor"}} match={{time: "7:00"}} />
-            <Card homeTeam={{slug: "por"}} awayTeam={{slug: "gan"}} match={{time: "7:00"}} />
+            {/* <Card homeTeam={{slug: "sui"}} awayTeam={{slug: "cam"}} match={{time: "7:00"}} /> */}
           </div>
         </section>
       </main>

@@ -2,6 +2,7 @@ import {Icon, Card, DateSelect} from "~/components"
 import {useNavigate} from "react-router-dom"
 import {useState, useEffect} from "react"
 import {format, formatISO} from "date-fns"
+import {ptBR} from "date-fns/locale"
 
 export const Dashboard = () => {
   const [auth] = useState(JSON.parse(localStorage.getItem("auth")) || false)
@@ -28,7 +29,7 @@ export const Dashboard = () => {
   useEffect(() => {
     async function fetchGames() {
       try {
-        const response = await fetch(`http://localhost:3000/games?gameTime=${currentDate}`)
+        const response = await fetch(`http://localhost:3000/games`)
         const data = await response.json()
         setResult(data)
       } catch (error) {
@@ -36,7 +37,7 @@ export const Dashboard = () => {
       }
     }
     fetchGames()
-  }, [currentDate])
+  }, [])
 
   return (
     <>
@@ -61,18 +62,23 @@ export const Dashboard = () => {
         </section>
 
         <section id="content" className="container max-x-3xl p-4 space-y-4">
-          
           <DateSelect currentDate={currentDate} onChange={setCurrentDate} />
 
           <div className="space-y-4">
-            {result.map((game) => (
-              <Card
-                key={game.id}
-                homeTeam={{slug: game.homeTeam}}
-                awayTeam={{slug: game.awayTeam}}
-                match={{time: format(new Date(game.gameTime), "H:mm")}}
-              />
-            ))}
+            {result
+              .filter((game) => {
+                const gameTime = format(new Date(game.gameTime), "d 'de' MMMM", {locale: ptBR})
+                const date = format(new Date(currentDate), "d 'de' MMMM", {locale: ptBR})
+                return gameTime === date
+              })
+              .map((game) => (
+                <Card
+                  key={game.id}
+                  homeTeam={{slug: game.homeTeam}}
+                  awayTeam={{slug: game.awayTeam}}
+                  match={{time: format(new Date(game.gameTime), "H:mm")}}
+                />
+              ))}
           </div>
         </section>
       </main>
