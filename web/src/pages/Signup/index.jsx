@@ -2,7 +2,8 @@ import {Icon, Input} from "~/components"
 import axios from "axios"
 import {useFormik} from "formik"
 import * as yup from "yup"
-import {useEffect} from "react"
+import {useState, useEffect} from "react"
+import {useNavigate} from "react-router-dom"
 
 const validationSchema = yup.object().shape({
   name: yup.string().required("Preencha seu nome!"),
@@ -12,9 +13,20 @@ const validationSchema = yup.object().shape({
 })
 
 export const Signup = () => {
+  const navigate = useNavigate()
+  const [auth] = useState(JSON.parse(localStorage.getItem("auth")) || false)
+
   useEffect(() => {
     document.title = "Natrave - Signup"
   }, [])
+
+  useEffect(() => {
+    const now = new Date()
+    if (auth && now.getTime() < auth.expiry) {
+      navigate("/dashboard")
+    }
+  }, [])
+
   const formik = useFormik({
     onSubmit: async (values) => {
       const response = await axios({

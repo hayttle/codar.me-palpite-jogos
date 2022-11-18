@@ -1,10 +1,22 @@
-import {useEffect} from "react"
+import {useState, useEffect} from "react"
+import {useNavigate} from "react-router-dom"
 import {Icon, Card, DateSelect} from "~/components"
 
 export const Profile = () => {
+  const [auth] = useState(JSON.parse(localStorage.getItem("auth")) || false)
+  const navigate = useNavigate()
+
   useEffect(() => {
     document.title = "Natrave - Profile"
   }, [])
+
+  useEffect(() => {
+    const now = new Date()
+    if (!auth || now.getTime() > auth.expiry) {
+      navigate("/")
+    }
+  }, [])
+
   return (
     <>
       <header className="bg-red-500 text-white p-4">

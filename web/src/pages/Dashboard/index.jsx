@@ -9,18 +9,18 @@ export const Dashboard = () => {
   useEffect(() => {
     document.title = "Natrave - Dashboard"
   }, [])
-
+  
+  const logout = () => {
+    localStorage.removeItem("auth")
+    navigate("/")
+  }
+  
   useEffect(() => {
     const now = new Date()
     if (!auth || now.getTime() > auth.expiry) {
       logout()
     }
   }, [])
-
-  const logout = () => {
-    localStorage.removeItem("auth")
-    navigate("/")
-  }
 
   return (
     <>
