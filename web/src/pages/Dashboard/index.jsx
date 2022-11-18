@@ -1,26 +1,42 @@
 import {Icon, Card, DateSelect} from "~/components"
 import {useNavigate} from "react-router-dom"
 import {useState, useEffect} from "react"
+import {format, formatISO} from "date-fns"
 
 export const Dashboard = () => {
   const [auth] = useState(JSON.parse(localStorage.getItem("auth")) || false)
+  const [result, setResult] = useState([])
+  const [currentDate, setCurrentDate] = useState(formatISO(new Date(2022, 10, 20)))
   const navigate = useNavigate()
 
   useEffect(() => {
     document.title = "Natrave - Dashboard"
   }, [])
-  
+
   const logout = () => {
     localStorage.removeItem("auth")
     navigate("/")
   }
-  
+
   useEffect(() => {
     const now = new Date()
     if (!auth || now.getTime() > auth.expiry) {
       logout()
     }
   }, [])
+
+  useEffect(() => {
+    async function fetchGames() {
+      try {
+        const response = await fetch(`http://localhost:3000/games?gameTime=${currentDate}`)
+        const data = await response.json()
+        setResult(data)
+      } catch (error) {
+        setResult(null)
+      }
+    }
+    fetchGames()
+  }, [currentDate])
 
   return (
     <>
@@ -45,10 +61,18 @@ export const Dashboard = () => {
         </section>
 
         <section id="content" className="container max-x-3xl p-4 space-y-4">
-          <DateSelect />
+          
+          <DateSelect currentDate={currentDate} onChange={setCurrentDate} />
 
           <div className="space-y-4">
-            <Card homeTeam={{slug: "sui"}} awayTeam={{slug: "cam"}} match={{time: "7:00"}} />
+            {result.map((game) => (
+              <Card
+                key={game.id}
+                homeTeam={{slug: game.homeTeam}}
+                awayTeam={{slug: game.awayTeam}}
+                match={{time: format(new Date(game.gameTime), "H:mm")}}
+              />
+            ))}
           </div>
         </section>
       </main>
