@@ -1,28 +1,58 @@
-export const Card = ({ homeTeam, awayTeam, match }) => (
-  <div className="rounded-xl border border-gray-300 p-4 text-center space-y-4">
-    <span className="text-sm md:text-base text-gray-700 font-bold">
-      {match.time}
-    </span>
-    <div className="flex space-x-4 justify-center items-center">
-      <span className="uppercase">{homeTeam.slug}</span>
-      <img src={`/imgs/flags/${homeTeam.slug}.png`} alt="" />
+import {useFormik} from "formik"
+import * as yup from "yup"
+import {useState} from "react"
 
-      <input
-        type="number"
-        className="bg-red-300/[0.2] w-[55px] h-[55px] text-red-700 text-xl text-center"
-        name=""
-        id=""
-      />
-      <span className="text-red-500 font-bold">X</span>
-      <input
-        type="number"
-        className="bg-red-300/[0.2] w-[55px] h-[55px] text-red-700 text-xl text-center"
-        name=""
-        id=""
-      />
+const validationSchema = yup.object().shape({
+  homeTeamScore: yup.string().required(),
+  awayTeamScore: yup.string().required()
+})
 
-      <img src={`/imgs/flags/${awayTeam.slug}.png`} alt="" />
-      <span className="uppercase">{awayTeam.slug}</span>
+export const Card = ({gameId, homeTeam, awayTeam, gameTime}) => {
+  const [auth] = useState(JSON.parse(localStorage.getItem("auth")))
+  const formik = useFormik({
+    onSubmit: (values) => {
+      fetch("http://localhost:3000/hunches", {
+        method: "POST",
+        body: JSON.stringify({...values, gameId}),
+        headers: {"Content-type": "application/json; charset=UTF-8",authorization: `Bearer ${auth.accessToken}`}
+      })
+    },
+    initialValues: {
+      homeTeamScore: "",
+      awayTeamScore: ""
+    },
+    validationSchema
+  })
+  return (
+    <div className="rounded-xl border border-gray-300 p-4 text-center space-y-4">
+      <span className="text-sm md:text-base text-gray-700 font-bold">{gameTime}</span>
+      <form className="flex space-x-4 justify-center items-center">
+        <span className="uppercase">{homeTeam}</span>
+        <img src={`/imgs/flags/${homeTeam}.png`} alt="" />
+
+        <input
+          className="bg-red-300/[0.2] w-[55px] h-[55px] text-red-700 text-xl text-center"
+          type="number"
+          name="homeTeamScore"
+          id=""
+          value={formik.values.homeTeamScore}
+          onChange={formik.handleChange}
+          onBlur={formik.handleSubmit}
+        />
+        <span className="text-red-500 font-bold">X</span>
+        <input
+          className="bg-red-300/[0.2] w-[55px] h-[55px] text-red-700 text-xl text-center"
+          type="number"
+          name="awayTeamScore"
+          id=""
+          value={formik.values.awayTeamScore}
+          onChange={formik.handleChange}
+          onBlur={formik.handleSubmit}
+        />
+
+        <img src={`/imgs/flags/${awayTeam}.png`} alt="" />
+        <span className="uppercase">{awayTeam}</span>
+      </form>
     </div>
-  </div>
-);
+  )
+}

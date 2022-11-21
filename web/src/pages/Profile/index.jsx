@@ -1,10 +1,14 @@
-import { formatISO } from "date-fns"
+import {format, formatISO} from "date-fns"
 import {useState, useEffect} from "react"
 import {useNavigate} from "react-router-dom"
 import {Icon, Card, DateSelect} from "~/components"
+import {ptBR} from "date-fns/locale"
+
 
 export const Profile = () => {
   const [auth] = useState(JSON.parse(localStorage.getItem("auth")) || false)
+  const [result, setResult] = useState([])
+
   const [currentDate, setCurrentDate] = useState(formatISO(new Date(2022, 10, 20)))
   const navigate = useNavigate()
 
@@ -17,6 +21,19 @@ export const Profile = () => {
     if (!auth || now.getTime() > auth.expiry) {
       navigate("/")
     }
+  }, [])
+
+  useEffect(() => {
+    async function fetchGames() {
+      try {
+        const response = await fetch(`http://localhost:3000/games`)
+        const data = await response.json()
+        setResult(data)
+      } catch (error) {
+        setResult(null)
+      }
+    }
+    fetchGames()
   }, [])
 
   return (
@@ -33,7 +50,7 @@ export const Profile = () => {
             <a href="/dashboard">
               <Icon name="back" className="w-10" />
             </a>
-            <h3 className="text-2xl font-bold">Hayttle Soljnivisk</h3>
+            <h3 className="text-2xl font-bold">{auth.user.name}</h3>
           </div>
         </section>
 
@@ -43,7 +60,21 @@ export const Profile = () => {
           <DateSelect currentDate={currentDate} onChange={setCurrentDate} />
 
           <div className="space-y-4">
-            {/* <Card homeTeam={{slug: "sui"}} awayTeam={{slug: "cam"}} match={{time: "7:00"}} /> */}
+            {result
+              .filter((game) => {
+                const gameTime = format(new Date(game.gameTime), "d 'de' MMMM", {locale: ptBR})
+                const date = format(new Date(currentDate), "d 'de' MMMM", {locale: ptBR})
+                return gameTime === date
+              })
+              .map((game) => (
+                <Card
+                  key={game.id}
+                  gameId={game.id}
+                  homeTeam={game.homeTeam}
+                  awayTeam={game.awayTeam}
+                  gameTime={format(new Date(game.gameTime), "H:mm")}
+                />
+              ))}
           </div>
         </section>
       </main>

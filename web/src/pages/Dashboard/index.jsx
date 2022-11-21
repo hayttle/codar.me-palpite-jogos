@@ -26,6 +26,8 @@ export const Dashboard = () => {
     }
   }, [])
 
+  //TODO: Relacionar os palpites com o usuário
+
   useEffect(() => {
     async function fetchGames() {
       try {
@@ -74,9 +76,10 @@ export const Dashboard = () => {
               .map((game) => (
                 <Card
                   key={game.id}
-                  homeTeam={{slug: game.homeTeam}}
-                  awayTeam={{slug: game.awayTeam}}
-                  match={{time: format(new Date(game.gameTime), "H:mm")}}
+                  gameId={game.id}
+                  homeTeam={game.homeTeam}
+                  awayTeam={game.awayTeam}
+                  gameTime={format(new Date(game.gameTime), "H:mm")}
                 />
               ))}
           </div>

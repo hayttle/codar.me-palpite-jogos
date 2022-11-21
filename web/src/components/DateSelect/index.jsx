@@ -20,9 +20,9 @@ export const DateSelect = ({currentDate, onChange}) => {
 
   return (
     <div className="p-4 flex space-x-4 items-center justify-center">
-      <Icon name="arrowLeft" className="text-red-500 w-6" onClick={previousDay} />
+      <Icon name="arrowLeft" className="text-red-500 w-6 cursor-pointer" onClick={previousDay} />
       <span className="font-bold">{format(date, "d 'de' MMMM", {locale: ptBR})}</span>
-      <Icon name="arrowRight" className="text-red-500 w-6" onClick={nextDay} />
+      <Icon name="arrowRight" className="text-red-500 w-6 cursor-pointer" onClick={nextDay} />
     </div>
   )
 }
