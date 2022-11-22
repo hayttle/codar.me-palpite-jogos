@@ -6,7 +6,8 @@ import {ptBR} from "date-fns/locale"
 
 export const Dashboard = () => {
   const [auth] = useState(JSON.parse(localStorage.getItem("auth")) || false)
-  const [result, setResult] = useState([])
+  const [games, setGames] = useState([])
+  const [hunches, setHunches] = useState([])
   const [currentDate, setCurrentDate] = useState(formatISO(new Date(2022, 10, 20)))
   const navigate = useNavigate()
 
@@ -26,16 +27,32 @@ export const Dashboard = () => {
     }
   }, [])
 
-  //TODO: Relacionar os palpites com o usuário
+  useEffect(() => {
+    async function fetchHunches() {
+      try {
+        const response = await fetch(`http://localhost:3000/${auth.user.username}`)
+        const data = await response.json()
+
+        const hunches = data.reduce((acc, hunch) => {
+          acc[hunch.gameId] = hunch
+          return acc
+        }, {})
+        setHunches(hunches)
+      } catch (error) {
+        setHunches(null)
+      }
+    }
+    fetchHunches()
+  },[])
 
   useEffect(() => {
     async function fetchGames() {
       try {
         const response = await fetch(`http://localhost:3000/games`)
         const data = await response.json()
-        setResult(data)
+        setGames(data)
       } catch (error) {
-        setResult(null)
+        setGames(null)
       }
     }
     fetchGames()
@@ -67,7 +84,7 @@ export const Dashboard = () => {
           <DateSelect currentDate={currentDate} onChange={setCurrentDate} />
 
           <div className="space-y-4">
-            {result
+            {games
               .filter((game) => {
                 const gameTime = format(new Date(game.gameTime), "d 'de' MMMM", {locale: ptBR})
                 const date = format(new Date(currentDate), "d 'de' MMMM", {locale: ptBR})
@@ -80,6 +97,8 @@ export const Dashboard = () => {
                   homeTeam={game.homeTeam}
                   awayTeam={game.awayTeam}
                   gameTime={format(new Date(game.gameTime), "H:mm")}
+                  homeTeamScore={hunches[game.id]?.homeTeamScore || ""}
+                  awayTeamScore={hunches[game.id]?.awayTeamScore || ""}
                 />
               ))}
           </div>

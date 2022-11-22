@@ -7,19 +7,20 @@ const validationSchema = yup.object().shape({
   awayTeamScore: yup.string().required()
 })
 
-export const Card = ({gameId, homeTeam, awayTeam, gameTime}) => {
+export const Card = ({gameId, homeTeam, awayTeam, gameTime, homeTeamScore, awayTeamScore}) => {
+
   const [auth] = useState(JSON.parse(localStorage.getItem("auth")))
   const formik = useFormik({
     onSubmit: (values) => {
       fetch("http://localhost:3000/hunches", {
         method: "POST",
         body: JSON.stringify({...values, gameId}),
-        headers: {"Content-type": "application/json; charset=UTF-8",authorization: `Bearer ${auth.accessToken}`}
+        headers: {"Content-type": "application/json; charset=UTF-8", authorization: `Bearer ${auth.accessToken}`}
       })
     },
     initialValues: {
-      homeTeamScore: "",
-      awayTeamScore: ""
+      homeTeamScore,
+      awayTeamScore
     },
     validationSchema
   })
