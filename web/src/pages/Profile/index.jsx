@@ -4,7 +4,6 @@ import {useNavigate, useParams} from "react-router-dom"
 import {Icon, Card, DateSelect} from "~/components"
 import {ptBR} from "date-fns/locale"
 
-
 export const Profile = () => {
   const params = useParams()
   const [auth] = useState(JSON.parse(localStorage.getItem("auth")) || false)
@@ -16,7 +15,7 @@ export const Profile = () => {
   useEffect(() => {
     document.title = "Natrave - Palpites"
   }, [])
- 
+
   useEffect(() => {
     async function fetchHunches() {
       try {
@@ -27,13 +26,13 @@ export const Profile = () => {
           acc[hunch.gameId] = hunch
           return acc
         }, {})
-        setUser({...data,hunches})
+        setUser({...data, hunches})
       } catch (error) {
         setUser(null)
       }
     }
     fetchHunches()
-  },[])
+  }, [])
 
   useEffect(() => {
     async function fetchGames() {
@@ -85,8 +84,8 @@ export const Profile = () => {
                   homeTeam={game.homeTeam}
                   awayTeam={game.awayTeam}
                   gameTime={format(new Date(game.gameTime), "H:mm")}
-                  homeTeamScore={user.hunches[game.id]?.homeTeamScore || ""}
-                  awayTeamScore={user.hunches[game.id]?.awayTeamScore || ""}
+                  homeTeamScore={user.hunches[game.id]?.homeTeamScore ?? ""}
+                  awayTeamScore={user.hunches[game.id]?.awayTeamScore ?? ""}
                   disabled={true}
                 />
               ))}
