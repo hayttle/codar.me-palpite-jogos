@@ -8,6 +8,7 @@ export const Dashboard = () => {
   const [auth] = useState(JSON.parse(localStorage.getItem("auth")) || false)
   const [games, setGames] = useState([])
   const [hunches, setHunches] = useState([])
+
   const [currentDate, setCurrentDate] = useState(formatISO(new Date(2022, 10, 20)))
   const navigate = useNavigate()
 
@@ -64,7 +65,7 @@ export const Dashboard = () => {
         <div className="container max-x-3xl flex justify-between p-4">
           <img src="/imgs/logo-red.svg" className="w-28 md:w-40" alt="" />
           <div className="flex flex-col justify-center">
-            <a href="/profile">
+            <a href={`/${auth?.user?.username}`}>
               <Icon name="profile" className="w-10" />
             </a>
             <button onClick={logout}>Sair</button>

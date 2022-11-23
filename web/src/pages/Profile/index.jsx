@@ -1,14 +1,16 @@
 import {format, formatISO} from "date-fns"
 import {useState, useEffect} from "react"
-import {useNavigate} from "react-router-dom"
+import {useNavigate, useParams} from "react-router-dom"
 import {Icon, Card, DateSelect} from "~/components"
 import {ptBR} from "date-fns/locale"
 
 
 export const Profile = () => {
+  const params = useParams()
   const [auth] = useState(JSON.parse(localStorage.getItem("auth")) || false)
-  const [result, setResult] = useState([])
-
+  const [games, setGames] = useState([])
+  const [user, setUser] = useState([])
+console.log(user)
   const [currentDate, setCurrentDate] = useState(formatISO(new Date(2022, 10, 20)))
   const navigate = useNavigate()
 
@@ -16,21 +18,39 @@ export const Profile = () => {
     document.title = "Natrave - Profile"
   }, [])
 
+  // useEffect(() => {
+  //   const now = new Date()
+  //   if (!auth || now.getTime() > auth.expiry) {
+  //     navigate("/")
+  //   }
+  // }, [])
+
   useEffect(() => {
-    const now = new Date()
-    if (!auth || now.getTime() > auth.expiry) {
-      navigate("/")
+    async function fetchHunches() {
+      try {
+        const response = await fetch(`http://localhost:3000/${params.username}`)
+        const data = await response.json()
+
+        const hunches = data.hunches.reduce((acc, hunch) => {
+          acc[hunch.gameId] = hunch
+          return acc
+        }, {})
+        setUser({...data,hunches})
+      } catch (error) {
+        setUser(null)
+      }
     }
-  }, [])
+    fetchHunches()
+  },[])
 
   useEffect(() => {
     async function fetchGames() {
       try {
         const response = await fetch(`http://localhost:3000/games`)
         const data = await response.json()
-        setResult(data)
+        setGames(data)
       } catch (error) {
-        setResult(null)
+        setGames(null)
       }
     }
     fetchGames()
@@ -50,7 +70,7 @@ export const Profile = () => {
             <a href="/dashboard">
               <Icon name="back" className="w-10" />
             </a>
-            <h3 className="text-2xl font-bold">{auth.user.name}</h3>
+            <h3 className="text-2xl font-bold">{user.name}</h3>
           </div>
         </section>
 
@@ -60,7 +80,7 @@ export const Profile = () => {
           <DateSelect currentDate={currentDate} onChange={setCurrentDate} />
 
           <div className="space-y-4">
-            {result
+            {games
               .filter((game) => {
                 const gameTime = format(new Date(game.gameTime), "d 'de' MMMM", {locale: ptBR})
                 const date = format(new Date(currentDate), "d 'de' MMMM", {locale: ptBR})
@@ -73,6 +93,9 @@ export const Profile = () => {
                   homeTeam={game.homeTeam}
                   awayTeam={game.awayTeam}
                   gameTime={format(new Date(game.gameTime), "H:mm")}
+                  homeTeamScore={user.hunches[game.id]?.homeTeamScore || ""}
+                  awayTeamScore={user.hunches[game.id]?.awayTeamScore || ""}
+                  disabled={true}
                 />
               ))}
           </div>
