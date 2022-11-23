@@ -10,21 +10,13 @@ export const Profile = () => {
   const [auth] = useState(JSON.parse(localStorage.getItem("auth")) || false)
   const [games, setGames] = useState([])
   const [user, setUser] = useState([])
-console.log(user)
   const [currentDate, setCurrentDate] = useState(formatISO(new Date(2022, 10, 20)))
   const navigate = useNavigate()
 
   useEffect(() => {
-    document.title = "Natrave - Profile"
+    document.title = "Natrave - Palpites"
   }, [])
-
-  // useEffect(() => {
-  //   const now = new Date()
-  //   if (!auth || now.getTime() > auth.expiry) {
-  //     navigate("/")
-  //   }
-  // }, [])
-
+ 
   useEffect(() => {
     async function fetchHunches() {
       try {
@@ -75,7 +67,7 @@ console.log(user)
         </section>
 
         <section id="content" className="container max-x-3xl p-4 space-y-4">
-          <h2 className="text-red-500 text-xl font-bold">Seus palpites</h2>
+          <h2 className="text-red-500 text-xl font-bold">Palpites</h2>
 
           <DateSelect currentDate={currentDate} onChange={setCurrentDate} />
 

@@ -89,7 +89,6 @@ export const hunches = async (ctx) => {
     ctx.body = {
       name : user.name,
       hunches}
-    
   } catch (error) {
     console.error(error)
     ctx.body = error

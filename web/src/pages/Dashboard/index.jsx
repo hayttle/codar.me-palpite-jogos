@@ -6,10 +6,11 @@ import {ptBR} from "date-fns/locale"
 
 export const Dashboard = () => {
   const [auth] = useState(JSON.parse(localStorage.getItem("auth")) || false)
+  const [currentDate, setCurrentDate] = useState(formatISO(new Date(2022, 10, 20)))
+
   const [games, setGames] = useState([])
   const [hunches, setHunches] = useState([])
 
-  const [currentDate, setCurrentDate] = useState(formatISO(new Date(2022, 10, 20)))
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -34,7 +35,7 @@ export const Dashboard = () => {
         const response = await fetch(`http://localhost:3000/${auth.user.username}`)
         const data = await response.json()
 
-        const hunches = data.reduce((acc, hunch) => {
+        const hunches = data.hunches.reduce((acc, hunch) => {
           acc[hunch.gameId] = hunch
           return acc
         }, {})
@@ -44,7 +45,7 @@ export const Dashboard = () => {
       }
     }
     fetchHunches()
-  },[])
+  }, [currentDate])
 
   useEffect(() => {
     async function fetchGames() {
@@ -76,7 +77,7 @@ export const Dashboard = () => {
       <main className="space-y-6">
         <section id="header" className="bg-red-500 text-white">
           <div className="container max-x-3xl space-y-2 p-4">
-            <span>Olá Hayttle</span>
+            <span>Olá, {auth.user.name}</span>
             <h3 className="text-2xl font-bold">Qual é o seu palpite</h3>
           </div>
         </section>
@@ -98,8 +99,8 @@ export const Dashboard = () => {
                   homeTeam={game.homeTeam}
                   awayTeam={game.awayTeam}
                   gameTime={format(new Date(game.gameTime), "H:mm")}
-                  homeTeamScore={hunches[game.id]?.homeTeamScore || ""}
-                  awayTeamScore={hunches[game.id]?.awayTeamScore || ""}
+                  homeTeamScore={String(hunches[game.id]?.homeTeamScore) || ""}
+                  awayTeamScore={String(hunches[game.id]?.awayTeamScore) || ""}
                 />
               ))}
           </div>
