@@ -40,7 +40,7 @@ export const Login = () => {
       try {
         const response = await axios({
           method: "GET",
-          baseURL: "http://localhost:3000",
+          baseURL: import.meta.env.VITE_API_URL,
           url: "/login",
           auth: {
             username: values.email,

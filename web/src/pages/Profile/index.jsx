@@ -19,7 +19,7 @@ export const Profile = () => {
   useEffect(() => {
     async function fetchHunches() {
       try {
-        const response = await fetch(`http://localhost:3000/${params.username}`)
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/${params.username}`)
         const data = await response.json()
 
         const hunches = data.hunches.reduce((acc, hunch) => {
@@ -37,7 +37,7 @@ export const Profile = () => {
   useEffect(() => {
     async function fetchGames() {
       try {
-        const response = await fetch(`http://localhost:3000/games`)
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/games`)
         const data = await response.json()
         setGames(data)
       } catch (error) {

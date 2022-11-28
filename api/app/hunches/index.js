@@ -7,16 +7,16 @@ export const create = async (ctx) => {
     ctx.status = 401
     return
   }
-
+  
   const [, token] = ctx.request.headers.authorization.split(" ")
-
+  
   try {
     const data = jwt.verify(token, process.env.JWT_SECRET)
-
-    if (!ctx.request.body.homeTeamScore && !ctx.request.body.awayTeamScore) {
-      ctx.status = 400
-      return
-    }
+    
+    // if (!ctx.request.body.homeTeamScore && !ctx.request.body.awayTeamScore) {
+    //   ctx.status = 400
+    //   return
+    // }
 
     const userId = data.id
     const {gameId} = ctx.request.body

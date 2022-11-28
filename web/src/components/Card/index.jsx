@@ -11,7 +11,7 @@ export const Card = ({gameId, homeTeam, awayTeam, gameTime, homeTeamScore, awayT
   const [auth] = useState(JSON.parse(localStorage.getItem("auth")))
   const formik = useFormik({
     onSubmit: (values) => {
-      fetch("http://localhost:3000/hunches", {
+      fetch(`${import.meta.env.VITE_API_URL}/hunches`, {
         method: "POST",
         body: JSON.stringify({...values, gameId}),
         headers: {"Content-type": "application/json; charset=UTF-8", authorization: `Bearer ${auth.accessToken}`}
